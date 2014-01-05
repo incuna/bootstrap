@@ -168,7 +168,7 @@ describe('datepicker directive', function () {
       var options = getAllOptionsEl();
       for (var i = 0; i < 5; i ++) {
         for (var j = 0; j < 7; j ++) {
-          expect(options[i][j].find('button').find('span').hasClass('text-muted')).toBe( ((i === 0 && j < 3) || (i === 4 && j > 4)) );
+          expect(options[i][j].find('button').hasClass('text-muted')).toBe( ((i === 0 && j < 3) || (i === 4 && j > 4)) );
         }
       }
     });
@@ -1325,13 +1325,13 @@ describe('datepicker directive', function () {
         expect($body.children().length).toEqual(bodyLength);
       });
     });
-    
+
     describe('with setting datepickerConfig.showWeeks to false', function() {
       var originalConfig = {};
       beforeEach(inject(function(datepickerConfig) {
         angular.extend(originalConfig, datepickerConfig);
         datepickerConfig.showWeeks = false;
-        
+
         var wrapElement = $compile('<div><input ng-model="date" datepicker-popup><div>')($rootScope);
         $rootScope.$digest();
         assignElements(wrapElement);
@@ -1340,7 +1340,7 @@ describe('datepicker directive', function () {
         // return it to the original state
         angular.extend(datepickerConfig, originalConfig);
       }));
-      
+
       it('changes initial visibility for weeks', function() {
         expect(getLabelsRow().find('th').eq(0).css('display')).toBe('none');
         var tr = element.find('tbody').find('tr');
