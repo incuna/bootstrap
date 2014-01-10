@@ -49,8 +49,8 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
     return dates;
   }
 
-  function makeDate(date, format, isSelected, isSecondary, isToday) {
-    return { date: date, label: dateFilter(date, format), selected: !!isSelected, secondary: !!isSecondary, today: isToday };
+  function makeDate(date, format, isSelected, isSecondary, isToday, isHighlighted) {
+    return { date: date, label: dateFilter(date, format), selected: !!isSelected, secondary: !!isSecondary, today: isToday, highlighted: isHighlighted };
   }
 
   this.modes = [
@@ -61,6 +61,12 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
         var difference = startingDay - firstDayOfMonth.getDay(),
         numDisplayedFromPreviousMonth = (difference > 0) ? 7 - difference : - difference,
         firstDate = new Date(firstDayOfMonth), numDates = 0;
+        var highlights = [];
+        if (angular.isDefined($scope.highlightDates)) {
+          angular.forEach($scope.highlightDates, function (date) {
+            highlights.push(new Date(date).setHours(0, 0, 0, 0));
+          });
+        }
 
         if ( numDisplayedFromPreviousMonth > 0 ) {
           firstDate.setDate( - numDisplayedFromPreviousMonth + 1 );
@@ -72,7 +78,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
         var days = getDates(firstDate, numDates), labels = new Array(7);
         for (var i = 0; i < numDates; i ++) {
           var dt = new Date(days[i]);
-          days[i] = makeDate(dt, format.day, (selected && selected.getDate() === dt.getDate() && selected.getMonth() === dt.getMonth() && selected.getFullYear() === dt.getFullYear()), dt.getMonth() !== month, today.setHours(0, 0, 0, 0) === dt.setHours(0, 0, 0, 0));
+          days[i] = makeDate(dt, format.day, (selected && selected.getDate() === dt.getDate() && selected.getMonth() === dt.getMonth() && selected.getFullYear() === dt.getFullYear()), dt.getMonth() !== month, today.setHours(0, 0, 0, 0) === dt.setHours(0, 0, 0, 0), highlights.indexOf(dt.setHours(0, 0, 0, 0)) > -1);
         }
         for (var j = 0; j < 7; j++) {
           labels[j] = dateFilter(days[j].date, format.dayHeader);
@@ -131,7 +137,8 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
     replace: true,
     templateUrl: 'template/datepicker/datepicker.html',
     scope: {
-      dateDisabled: '&'
+      dateDisabled: '&',
+      highlightDates: '='
     },
     require: ['datepicker', '?^ngModel'],
     controller: 'DatepickerController',
@@ -144,6 +151,12 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
 
       // Configuration parameters
       var mode = 0, selected = new Date(), showWeeks = datepickerConfig.showWeeks;
+
+      if (attrs.highlightDates) {
+        scope.$watch('highlightDates', function(value) {
+          refill();
+        });
+      }
 
       if (attrs.showWeeks) {
         scope.$parent.$watch($parse(attrs.showWeeks), function(value) {
@@ -412,6 +425,9 @@ function ($compile, $parse, $document, $position, dateFilter, datepickerPopupCon
       }
       if (attrs.dateDisabled) {
         datepickerEl.attr('date-disabled', attrs.dateDisabled);
+      }
+      if (attrs.highlightDates) {
+        addWatchableAttribute(attrs.highlightDates, 'highlightDates', 'highlight-dates');
       }
 
       function updatePosition() {
