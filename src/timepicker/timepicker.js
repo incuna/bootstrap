@@ -24,6 +24,8 @@ angular.module('ui.bootstrap.timepicker', [])
       var selected = new Date(),
           meridians = angular.isDefined(attrs.meridians) ? scope.$parent.$eval(attrs.meridians) : timepickerConfig.meridians || $locale.DATETIME_FORMATS.AMPMS;
 
+      scope.meridians = meridians;
+
       var hourStep = timepickerConfig.hourStep;
       if (attrs.hourStep) {
         scope.$parent.$watch($parse(attrs.hourStep), function(value) {
