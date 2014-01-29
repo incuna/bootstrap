@@ -243,7 +243,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
       };
       scope.move = function(direction) {
         var step = datepickerCtrl.modes[mode].step;
-        selected.setMonth( selected.getMonth() + direction * (step.months || 0) );
+        selected.setMonth( selected.getMonth() + direction * (step.months || 0), 1 );
         selected.setFullYear( selected.getFullYear() + direction * (step.years || 0) );
         refill();
       };
