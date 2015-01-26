@@ -138,7 +138,8 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
     templateUrl: 'template/datepicker/datepicker.html',
     scope: {
       dateDisabled: '&',
-      highlightDates: '='
+      highlightDates: '=',
+      focusedDate: '=?'
     },
     require: ['datepicker', '?^ngModel'],
     controller: 'DatepickerController',
@@ -150,7 +151,9 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
       }
 
       // Configuration parameters
-      var mode = 0, selected = new Date(), showWeeks = datepickerConfig.showWeeks;
+      var mode = 0;
+      var selected = scope.focusedDate = new Date();
+      var showWeeks = datepickerConfig.showWeeks;
 
       if (attrs.highlightDates) {
         scope.$watch('highlightDates', function(value) {
@@ -245,6 +248,7 @@ angular.module('ui.bootstrap.datepicker', ['ui.bootstrap.position'])
         var step = datepickerCtrl.modes[mode].step;
         selected.setMonth( selected.getMonth() + direction * (step.months || 0), 1 );
         selected.setFullYear( selected.getFullYear() + direction * (step.years || 0) );
+        scope.focusedDate = selected;
         refill();
       };
       scope.toggleMode = function() {
